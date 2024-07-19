@@ -1,0 +1,59 @@
+:root {
+  --avatar-height: 25px;
+}
+
+.main {
+  height: fit-content;
+  width: var(--message-width);
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  height: var(--avatar-height);
+  border-radius: 100px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  margin-left: 15px;
+  width: 100%;
+}
+
+.text_container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  min-height: var(--avatar-height);
+}
+
+.text {
+  font-weight: 500;
+  display: inline;
+  align-items: center;
+  overflow: auto;
+  font-weight: medium;
+  width: var(--message-width);
+  overflow-wrap: break-word;
+  white-space: initial;
+}
+
+.attachments_container {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media only screen and (max-width: 600px) {
+  .main {
+    width: 80%;
+  }
+
+  .content {
+    margin-left: 10px;
+  }
+}

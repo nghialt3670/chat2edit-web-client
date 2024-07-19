@@ -1,0 +1,59 @@
+:root {
+  --border-radius: 26px;
+}
+
+.main {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: #dddddd;
+  height: fit-content;
+  margin-bottom: 30px;
+  border-radius: var(--border-radius);
+  width: var(--message-width);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.file_input {
+  display: none;
+}
+
+.text_input {
+  background-color: transparent;
+  outline: none;
+  border: none;
+  font-weight: 500;
+  font-size: medium;
+  width: 100%;
+}
+
+.container {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  bottom: 98%;
+  width: 100%;
+  border-top-left-radius: var(--border-radius);
+  border-top-right-radius: var(--border-radius);
+  height: fit-content;
+  justify-content: space-between;
+  gap: 10px;
+  max-height: 300px;
+  padding: 15px;
+  background-color: #dddddd;
+}
+
+.container::after {
+  content: "";
+  flex: auto;
+}
+
+@media only screen and (max-width: 600px) {
+  .main {
+    width: 80%;
+  }
+}

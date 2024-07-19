@@ -1,0 +1,16 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.body {
+  height: calc(100% - 50px);
+  display: flex;
+  flex-direction: row;
+}
+
+.toggle_button_container {
+  z-index: 1000;
+  position: absolute;
+}
