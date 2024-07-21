@@ -1,4 +1,4 @@
-import { createCanvasFromFile } from "./fabric";
+import { createCanvasFromFile, initCanvasFromFile } from "./fabric";
 
 export function readFileToDataURL(file: File): Promise<string | null> {
   return new Promise((resolve, reject) => {
@@ -16,12 +16,6 @@ export async function readFileAsText(file: File): Promise<string | null> {
     reader.onerror = () => reject(reader.error);
     reader.readAsText(file);
   });
-}
-
-export function getFileBaseName(file: File): string {
-  const fileNameParts = file.name.split(".");
-  fileNameParts.pop();
-  return fileNameParts.join(".");
 }
 
 export function getBaseName(filename: string): string {
@@ -114,4 +108,31 @@ export function getFilenameFromContentDisposition(
     return filename;
   }
   return null;
+}
+
+export async function convertFile(file: File): Promise<File> {
+  switch (getExtension(file.name)) {
+    case "canvas":
+      return file;
+    case "jpeg":
+    case "jpg":
+    case "png":
+    case "gif":
+    case "bmp":
+    case "webp":
+    case "tiff":
+    case "svg+xml":
+    case "vnd.microsoft.icon":
+    case "heif":
+    case "heic":
+    case "avif":
+    case "ico":
+      const canvas = await initCanvasFromFile(file);
+      const baseName = getBaseName(canvas.backgroundImage?.get("filename"));
+      const newFilename = `${baseName}.canvas`;
+      const blob = new Blob([JSON.stringify(canvas.toObject(["filename"]))], { type: "application/json" });
+      return new File([blob], newFilename, { type: "application/json" });
+    default:
+      throw new Error("Unsupported file")
+  }
 }

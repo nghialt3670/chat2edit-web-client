@@ -6,7 +6,7 @@ import { BiSolidSend } from "react-icons/bi";
 import Message from "../../models/Message";
 import { v4 } from "uuid";
 import { createTheme } from "@mui/material";
-import { copyFile, readFileToDataURL } from "../../utils/file";
+import { convertFile, copyFile, readFileToDataURL } from "../../utils/file";
 import FilePreview from "./FilePreview";
 import { getTimestampInSeconds } from "../../utils/time";
 
@@ -74,13 +74,15 @@ export default function MessageForm({
     setFiles(files.filter((file) => file.name !== removedFile.name));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
+    const convertedFiles = await Promise.all(files.map(async file => await convertFile(file)))
+    console.log(convertedFiles)
     const message: Message = {
       id: v4(),
       type: "Request",
       text: text,
-      files: files,
+      files: convertedFiles,
       timestamp: getTimestampInSeconds(),
     };
     onSendMessage(message);

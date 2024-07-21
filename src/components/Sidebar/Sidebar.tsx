@@ -20,8 +20,6 @@ export default function Sidebar() {
       sideBarRef.current.classList.toggle(classes.expanded);
   }, [sidebar]);
 
-  console.log(currConv)
-
   const renderConvs = (): ReactNode => {
     return (
       <div className={classes.conversations_container}>

@@ -80,7 +80,7 @@ export default function ChatBox() {
   };
 
   const renderMessages = (): ReactNode[] | ReactNode => {
-    if (currConv.messages.length === 0) return <CircularProgress color="info" disableShrink />
+    // if (currConv.messages.length === 0) return <CircularProgress color="info" disableShrink />
 
     return currConv.messages.map((message) => (
       <Message

@@ -1,10 +1,10 @@
 import endpoints from "../config";
 import { getFilenameFromContentDisposition } from "../utils/file";
 
-export async function requestFiles(fileIds: string[]): Promise<File[]> {
+export async function requestFiles(fileIds: string[], token: string): Promise<File[]> {
   return await Promise.all(
     fileIds.map(async (id) => {
-      const response = await fetch(`${endpoints.files}/${id}`);
+      const response = await fetch(`${endpoints.files}/${id}`, { headers: { Authorization: `Bearer ${token}`}});
 
       if (!response.ok) throw new Error();
 

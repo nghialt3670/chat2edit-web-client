@@ -27,7 +27,7 @@ export async function requestMessages(
       id: v4(),
       type: idx % 2 === 0 ? "Request" : "Response",
       text: res.text,
-      files: await requestFiles(res.file_ids),
+      files: await requestFiles(res.file_ids, token),
       timestamp: res.timestamp,
     })),
   );
