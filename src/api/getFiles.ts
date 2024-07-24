@@ -1,4 +1,4 @@
-import endpoints from "../config";
+import { endpoints } from "../config";
 import { getFilenameFromContentDisposition } from "../utils/file";
 
 export async function getFiles(

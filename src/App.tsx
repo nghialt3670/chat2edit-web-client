@@ -5,7 +5,7 @@ import Edit from "./pages/Edit";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter >
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/edit" element={<Edit />} />

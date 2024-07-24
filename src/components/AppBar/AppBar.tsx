@@ -14,17 +14,12 @@ import { TfiAlignJustify } from "react-icons/tfi";
 import { useConvStore, useLayoutStore, useUserStore } from "../../stores";
 import { fetchImageAsDataURL } from "../../utils/file";
 import { getUser } from "../../api";
-import { Conversation } from "../../models";
+import { base_url } from "../../config";
 
 export default function AppBar() {
   const convStore = useConvStore();
   const userStore = useUserStore();
   const layoutStore = useLayoutStore();
-  // const { theme, toggleTheme, toggleSidebar } = useLayoutStore((state) => ({
-  //   theme: state.theme,
-  //   toggleTheme: state.toggleTheme,
-  //   toggleSidebar: state.toggleSidebar,
-  // }));
   const { isSignedIn, getToken } = useAuth();
   const user = useUser();
 
@@ -78,12 +73,12 @@ export default function AppBar() {
       <div className={classes.sign_in_out}>
         <SignedOut>
           <Stack direction="row" gap={1}>
-            <SignInButton mode="modal">
+            <SignInButton mode="modal" fallbackRedirectUrl={base_url}>
               <Button variant="outlined" color="inherit" size="small">
                 Sign In
               </Button>
             </SignInButton>
-            <SignUpButton mode="modal">
+            <SignUpButton mode="modal" fallbackRedirectUrl={base_url}>
               <Button variant="contained" color="inherit" size="small">
                 Sign Up
               </Button>
@@ -91,7 +86,7 @@ export default function AppBar() {
           </Stack>
         </SignedOut>
         <SignedIn>
-          <UserButton />
+          <UserButton afterSignOutUrl={base_url}/>
         </SignedIn>
       </div>
     </div>

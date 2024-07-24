@@ -1,7 +1,4 @@
-import endpoints from "../config";
-import Message from "../models/Message";
-import { getTimestampInSeconds } from "../utils/time";
-import { v4 } from "uuid";
+import { endpoints } from "../config";
 
 interface UpdateResponse {
   convId: string;

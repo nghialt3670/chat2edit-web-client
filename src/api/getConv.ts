@@ -1,7 +1,4 @@
-import { v4 } from "uuid";
-import endpoints from "../config";
-import Message from "../models/Message";
-import { getFiles } from "./getFiles";
+import { endpoints } from "../config";
 
 interface MessageResponse {
   text: string;

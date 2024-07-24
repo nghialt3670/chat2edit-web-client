@@ -1,11 +1,12 @@
-// src/config.js
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const base_url = process.env.REACT_APP_BASE_URL
+
+const api_base_url = process.env.REACT_APP_API_BASE_URL;
 
 const endpoints = {
-  files: `${API_BASE_URL}/api/v1/files`,
-  chat: `${API_BASE_URL}/api/v1/chat`,
-  convs: `${API_BASE_URL}/api/v1/convs`,
-  users: `${API_BASE_URL}/api/v1/users`,
+  files: `${api_base_url}/api/v1/files`,
+  chat: `${api_base_url}/api/v1/chat`,
+  convs: `${api_base_url}/api/v1/convs`,
+  users: `${api_base_url}/api/v1/users`,
 };
 
-export default endpoints;
+export {base_url, api_base_url, endpoints};

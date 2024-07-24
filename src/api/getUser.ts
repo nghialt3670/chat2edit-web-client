@@ -1,4 +1,4 @@
-import endpoints from "../config";
+import { endpoints } from "../config";
 
 interface ConvResponse {
   id: string;
