@@ -31,7 +31,6 @@ export default function ConvPreview({ idx, conv }: ConvPreviewProps) {
 
   return (
     <div className={classes.main} onClick={handleClick}>
-      <div>{moment(timestampMiliSecs).fromNow()}</div>
       <div className={classes.title}>{conv.title}</div>
     </div>
   );

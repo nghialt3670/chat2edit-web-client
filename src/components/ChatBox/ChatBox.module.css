@@ -17,7 +17,3 @@
   gap: 10px;
   overflow-y: scroll;
 }
-
-.messages_container::-webkit-scrollbar-track {
-  background-color: aqua;
-}
