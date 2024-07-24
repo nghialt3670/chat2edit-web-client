@@ -3,6 +3,7 @@ import endpoints from "../config";
 interface ConvResponse {
   id: string;
   title: string;
+  lastSentTimestamp: number;
 }
 
 interface SettingsResponse {
@@ -14,7 +15,7 @@ interface UserResponse {
   convs: ConvResponse[];
 }
 
-export async function requestUser(token: string): Promise<UserResponse> {
+export async function getUser(token: string): Promise<UserResponse> {
   const response = await fetch(`${endpoints.users}/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });

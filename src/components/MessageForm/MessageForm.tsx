@@ -3,58 +3,38 @@ import classes from "./MessageForm.module.css";
 import { IconButton } from "@mui/material";
 import { MdAddPhotoAlternate } from "react-icons/md";
 import { BiSolidSend } from "react-icons/bi";
-import Message from "../../models/Message";
-import { v4 } from "uuid";
-import { createTheme } from "@mui/material";
-import { convertFile, copyFile, readFileToDataURL } from "../../utils/file";
 import FilePreview from "./FilePreview";
+import useFileStore from "../../stores/FileStore";
+import { createBsonId } from "../../utils/id";
+import Message from "../../models/Message";
 import { getTimestampInSeconds } from "../../utils/time";
+import { useConvStore } from "../../stores";
 
-const MIN_UPLOADING_TIME_MS = 500;
 const MAX_NUM_FILES = 6;
 
-interface MessageFormProps {
-  replyFiles: File[];
-  onSendMessage: (message: Message) => void;
-}
-
-enum UploadState {
-  NoUpload = "NoUpload",
-  Uploading = "Uploading",
-  Uploaded = "Uploaded",
-}
-
-export default function MessageForm({
-  replyFiles,
-  onSendMessage,
-}: MessageFormProps) {
+export default function MessageForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [text, setText] = useState<string>("");
-  const [files, setFiles] = useState<File[]>([]);
-
-  useEffect(() => {
-    if (replyFiles.length === 0) return;
-    const copyAndSetReplyFiles = async () => {
-      const newFiles = await Promise.all(
-        replyFiles.map(async (file) => await copyFile(file)),
-      );
-      setFiles([...files, ...newFiles]);
-    };
-    copyAndSetReplyFiles();
-  }, [replyFiles]);
+  const fileStore = useFileStore();
+  const convStore = useConvStore();
 
   const handleFileInputChange = async (
     event: React.ChangeEvent<HTMLInputElement>,
   ): Promise<void> => {
     if (event.target.files) {
-      const files = Array.from(event.target.files);
-      if (files.length > MAX_NUM_FILES) {
+      const newFiles = Array.from(event.target.files);
+
+      if (newFiles.length > MAX_NUM_FILES) {
         alert(`Maximum file upload per request is ${MAX_NUM_FILES}`);
         return;
       }
-      setFiles(files);
+      const newFileIds = Array.from({ length: newFiles.length }, () =>
+        createBsonId(),
+      );
+      fileStore.setFiles(newFileIds, newFiles);
+      fileStore.setOnFormIds(newFileIds);
       event.target.value = "";
       textInputRef.current?.focus();
     }
@@ -70,43 +50,35 @@ export default function MessageForm({
     fileInputRef.current?.click();
   };
 
-  const handleRemoveFile = (removedFile: File): void => {
-    setFiles(files.filter((file) => file.name !== removedFile.name));
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+  const handleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> => {
     event.preventDefault();
-    const convertedFiles = await Promise.all(files.map(async file => await convertFile(file)))
-    console.log(convertedFiles)
     const message: Message = {
-      id: v4(),
+      id: createBsonId(),
       type: "Request",
       text: text,
-      files: convertedFiles,
+      fileIds: fileStore.onFormIds,
       timestamp: getTimestampInSeconds(),
     };
-    onSendMessage(message);
+    convStore.addMessage(message);
+    fileStore.setOnFormIds([]);
     setText("");
-    setFiles([]);
   };
 
   const renderFilePreviews = (): ReactNode | undefined => {
-    if (files.length === 0) return undefined;
+    if (fileStore.onFormIds.length === 0) return undefined;
     return (
       <div className={classes.container}>
-        {files.map((file) => (
-          <FilePreview
-            key={file.name}
-            file={file}
-            onRemove={handleRemoveFile}
-          />
+        {fileStore.onFormIds.map((fileId) => (
+          <FilePreview key={fileId} fileId={fileId} />
         ))}
       </div>
     );
   };
 
   if (formRef.current) {
-    if (files.length === 0)
+    if (fileStore.onFormIds.length === 0)
       formRef.current.style.borderRadius = formRef.current.style.borderRadius;
     else {
       formRef.current.style.borderTopLeftRadius = "0px";

@@ -130,9 +130,11 @@ export async function convertFile(file: File): Promise<File> {
       const canvas = await initCanvasFromFile(file);
       const baseName = getBaseName(canvas.backgroundImage?.get("filename"));
       const newFilename = `${baseName}.canvas`;
-      const blob = new Blob([JSON.stringify(canvas.toObject(["filename"]))], { type: "application/json" });
+      const blob = new Blob([JSON.stringify(canvas.toObject(["filename"]))], {
+        type: "application/json",
+      });
       return new File([blob], newFilename, { type: "application/json" });
     default:
-      throw new Error("Unsupported file")
+      throw new Error("Unsupported file");
   }
 }

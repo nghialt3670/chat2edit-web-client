@@ -1,33 +1,19 @@
-import React from "react";
-import Conv from "../../models/Conv";
+import Conversation from "../../models/Conversation";
 import classes from "./ConvPreview.module.css";
-import { useConvsStore, useLayoutStore } from "../../stores";
-import moment from "moment";
-import { getTimestampInSeconds } from "../../utils/time";
+import { useConvStore, useLayoutStore } from "../../stores";
 
 interface ConvPreviewProps {
-  idx: number;
-  conv: Conv;
+  conv: Conversation;
 }
 
-export default function ConvPreview({ idx, conv }: ConvPreviewProps) {
-  const setCurrConv = useConvsStore((state) => state.setCurrConv);
-  const toggleSidebar = useLayoutStore((state) => state.toggleSidebar);
+export default function ConvPreview({ conv }: ConvPreviewProps) {
+  const convStore = useConvStore();
+  const layoutStore = useLayoutStore();
 
   const handleClick = () => {
-    setCurrConv(conv, idx);
-    toggleSidebar();
+    convStore.setCurrConv(conv);
+    layoutStore.toggleSidebar();
   };
-
-  let dateString: string;
-  const messages = conv.messages;
-  let timestampMiliSecs;
-  if (messages.length > 0) {
-    const lastMessage = messages[messages.length - 1];
-    timestampMiliSecs = lastMessage.timestamp * 1000;
-  } else {
-    timestampMiliSecs = getTimestampInSeconds() * 1000
-  }
 
   return (
     <div className={classes.main} onClick={handleClick}>

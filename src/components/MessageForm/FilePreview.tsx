@@ -1,43 +1,43 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import classes from "./FilePreview.module.css";
 import { IconButton } from "@mui/material";
 import { TiDelete } from "react-icons/ti";
-import {
-  getExtension,
-  getFilePreviewDataURL,
-  readFileToDataURL,
-} from "../../utils/file";
+import { getExtension, getFilePreviewDataURL } from "../../utils/file";
 import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import useFileStore from "../../stores/FileStore";
 
 interface FilePreviewProps {
-  file: File;
-  onRemove: (file: File) => void;
+  fileId: string;
 }
 
-export default function FilePreview({ file, onRemove }: FilePreviewProps) {
-  const [dataURL, setDataURL] = useState<string | null>();
-  const labelRef = useRef<HTMLDivElement>(null);
+export default function FilePreview({ fileId }: FilePreviewProps) {
+  const fileStore = useFileStore();
 
   useEffect(() => {
     const readAndSetDataURL = async () => {
-      const dataURL = await getFilePreviewDataURL(file);
-      setDataURL(dataURL);
+      const dataURL = fileStore.getDataURLs([fileId])[0];
+      if (!dataURL) {
+        const file = fileStore.getFiles([fileId])[0];
+        const dataURL = await getFilePreviewDataURL(file);
+        if (dataURL) {
+          fileStore.setDataURLs([fileId], [dataURL]);
+        }
+      }
     };
     readAndSetDataURL();
-  }, [file]);
+  }, [fileId, fileStore.idToDataURL]);
+
+  const file = fileStore.getFiles([fileId])[0];
+  const dataURL = fileStore.getDataURLs([fileId])[0];
 
   const handleRemoveClick = () => {
-    onRemove(file);
+    fileStore.removeOnFormIds([fileId]);
+    fileStore.removeFiles([fileId]);
   };
 
   const renderPreviewImage = () => {
     return dataURL ? (
-      <img
-        className={classes.image}
-        src={dataURL}
-        alt={`Preview of ${file.name}`}
-      />
+      <img className={classes.image} src={dataURL} alt={file.name} />
     ) : (
       <CircularProgress disableShrink />
     );
@@ -47,7 +47,7 @@ export default function FilePreview({ file, onRemove }: FilePreviewProps) {
 
   return (
     <div className={classes.main}>
-      <div className={classes.label} ref={labelRef}>
+      <div className={classes.label}>
         <span className={classes.extension}>{fileExtension}</span>
         <div className={classes.remove_button}>
           <IconButton size="small" onClick={handleRemoveClick}>

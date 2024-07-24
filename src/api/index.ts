@@ -1,6 +1,6 @@
-import { requestFiles } from "./requestFiles";
-import { requestChat } from "./requestChat";
-import { requestMessages } from "./requestMessages";
-import { requestUser } from "./requestUser";
+import { postChat } from "./postChat";
+import { getFiles } from "./getFiles";
+import { getConv } from "./getConv";
+import { getUser } from "./getUser";
 
-export { requestFiles, requestChat, requestMessages, requestUser };
+export { getFiles, postChat, getConv, getUser };

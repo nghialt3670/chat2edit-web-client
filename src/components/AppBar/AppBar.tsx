@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import classes from "./AppBar.module.css";
 import {
   SignedIn,
@@ -11,39 +11,53 @@ import {
 } from "@clerk/clerk-react";
 import { Button, IconButton, Stack } from "@mui/material";
 import { TfiAlignJustify } from "react-icons/tfi";
-import { useConvsStore, useLayoutStore, useUserStore } from "../../stores";
+import { useConvStore, useLayoutStore, useUserStore } from "../../stores";
 import { fetchImageAsDataURL } from "../../utils/file";
-import { requestUser } from "../../api";
+import { getUser } from "../../api";
+import { Conversation } from "../../models";
 
 export default function AppBar() {
-  const setAvatarDataURL = useUserStore((state) => state.setAvatarDataURL);
-  const setOldConvs = useConvsStore((state) => state.setOldConvs);
-  const { theme, toggleTheme, toggleSidebar } = useLayoutStore((state) => ({
-    theme: state.theme,
-    toggleTheme: state.toggleTheme,
-    toggleSidebar: state.toggleSidebar,
-  }));
+  const convStore = useConvStore();
+  const userStore = useUserStore();
+  const layoutStore = useLayoutStore();
+  // const { theme, toggleTheme, toggleSidebar } = useLayoutStore((state) => ({
+  //   theme: state.theme,
+  //   toggleTheme: state.toggleTheme,
+  //   toggleSidebar: state.toggleSidebar,
+  // }));
   const { isSignedIn, getToken } = useAuth();
   const user = useUser();
 
   useEffect(() => {
     const updateAppState = async () => {
       if (user.isSignedIn) {
-        const dataURL = await fetchImageAsDataURL(user.user.imageUrl);
-        setAvatarDataURL(dataURL);
+        try {
+          userStore.setAvatarDataURL(
+            await fetchImageAsDataURL(user.user.imageUrl),
+          );
 
-        const token = await getToken();
-        if (!token) throw Error();
+          const jwt = await getToken();
+          if (!jwt) throw Error("Can not get JWT");
 
-        const userResponse = await requestUser(token);
-        if (theme !== userResponse.settings.theme) toggleTheme();
-        setOldConvs(
-          userResponse.convs.map((conv) => ({
-            id: conv.id,
-            title: conv.title,
-            messages: [],
-          })),
-        );
+          const userResponse = await getUser(jwt);
+
+          if (layoutStore.theme !== userResponse.settings.theme)
+            layoutStore.toggleTheme();
+
+          convStore.setConvs(
+            userResponse.convs.map((conv) => ({
+              id: conv.id,
+              title: conv.title,
+              messages: [],
+              lastSentTimestamp: conv.lastSentTimestamp,
+            })),
+          );
+
+          convStore.createNewConv();
+        } catch (error: unknown) {
+          if (error instanceof Error) console.log(error.message);
+          else console.log("Unknow error");
+        }
       }
     };
     if (isSignedIn) {
@@ -54,7 +68,7 @@ export default function AppBar() {
   return (
     <div className={classes.main}>
       <div className={classes.toggle_button_container}>
-        <IconButton onClick={toggleSidebar}>
+        <IconButton onClick={layoutStore.toggleSidebar}>
           <TfiAlignJustify />
         </IconButton>
       </div>

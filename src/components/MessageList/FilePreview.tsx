@@ -1,31 +1,33 @@
-import React, { memo, useContext, useEffect, useState } from "react";
+import { memo } from "react";
 import classes from "./FilePreview.module.css";
 import { RiImageEditFill } from "react-icons/ri";
 import { MdFileDownload } from "react-icons/md";
 import { MdOutlineReply } from "react-icons/md";
 import { CircularProgress, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { downloadFile, getFilePreviewDataURL } from "../../utils/file";
+import { downloadFile } from "../../utils/file";
+import useFileStore from "../../stores/FileStore";
+import { createBsonId } from "../../utils/id";
 
 interface FilePreviewProps {
-  file: File;
-  onReply: (file: File) => void;
+  fileId: string;
 }
 
-function FilePreview({ file, onReply }: FilePreviewProps) {
-  const [dataURL, setDataURL] = useState<string | null>();
+function FilePreview({ fileId }: FilePreviewProps) {
   const navigate = useNavigate();
+  const fileStore = useFileStore();
 
-  useEffect(() => {
-    const readAndSetDataURL = async () => {
-      const dataURL = await getFilePreviewDataURL(file);
-      setDataURL(dataURL);
-    };
-    readAndSetDataURL();
-  }, [file]);
+  const file = fileStore.getFiles([fileId])[0];
+  const dataURL = fileStore.getDataURLs([fileId])[0];
 
   const handleReplyClick = () => {
-    onReply(file);
+    if (fileStore.onFormIds.length === 6) {
+      alert("Maxiximum files is 6");
+      return;
+    }
+    const newFileId = createBsonId();
+    fileStore.setFiles([newFileId], [file]);
+    fileStore.setOnFormIds([...fileStore.onFormIds, newFileId]);
   };
 
   const handleDownloadClick = async () => {
